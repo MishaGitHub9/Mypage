@@ -190,6 +190,7 @@
             quizSection.style.display = 'block';
             result.textContent = '';
             userAnswer.value = '';
+            userAnswer.focus(); // Фокус на полі введення
         });
 
         // Перевірити відповідь
@@ -211,6 +212,7 @@
             currentWordIndex = Math.floor(Math.random() * words.length);
             quizWord.textContent = `Як перекладається слово: "${words[currentWordIndex].word}"?`;
             userAnswer.value = '';
+            userAnswer.focus(); // Знову фокус на полі введення
         });
 
         // Оновлюємо список слів при завантаженні
