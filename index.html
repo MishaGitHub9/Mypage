@@ -190,7 +190,6 @@
             quizSection.style.display = 'block';
             result.textContent = '';
             userAnswer.value = '';
-            userAnswer.focus(); // Фокус на полі введення
         });
 
         // Перевірити відповідь
@@ -212,19 +211,18 @@
             currentWordIndex = Math.floor(Math.random() * words.length);
             quizWord.textContent = `Як перекладається слово: "${words[currentWordIndex].word}"?`;
             userAnswer.value = '';
-            userAnswer.focus(); // Знову фокус на полі введення
-        });
-
-        // Додано обробник події для закриття клавіатури
-        userAnswer.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Запобігаємо стандартній дії (відправка форми)
-                document.activeElement.blur(); // Втрачаємо фокус, що закриє клавіатуру
-            }
         });
 
         // Оновлюємо список слів при завантаженні
         updateWordList();
+
+        // Закрити клавіатуру при натисканні Enter
+        userAnswer.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Запобігання стандартній дії
+                document.activeElement.blur(); // Закриваємо клавіатуру
+            }
+        });
     </script>
 </body>
 </html>
