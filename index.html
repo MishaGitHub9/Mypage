@@ -3,167 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Особистий Нотатник</title>
+    <title>Словниковий Тренажер</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
             padding: 20px;
         }
 
         .container {
-            max-width: 400px;
-            margin: auto;
             background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
         }
 
         h1 {
-            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
 
         input {
-            width: calc(100% - 80px);
+            width: 100%;
             padding: 10px;
-            margin-right: 10px;
+            margin: 5px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
-            border-color: #28a745;
-            outline: none;
         }
 
         button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
             background-color: #28a745;
             color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 5px 0;
         }
 
         button:hover {
             background-color: #218838;
         }
 
-        .clear-btn {
-            background-color: #dc3545;
+        .quiz-section {
+            margin-top: 20px;
         }
 
-        .clear-btn:hover {
-            background-color: #c82333;
+        .result {
+            margin-top: 10px;
+            font-size: 18px;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 20px 0;
+        .word-list {
+            margin-top: 20px;
+            text-align: left;
         }
 
-        li {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
+        .word-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background-color 0.3s, transform 0.2s;
+            margin-bottom: 5px;
         }
 
         .delete-btn {
             background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
 
         .delete-btn:hover {
             background-color: #c82333;
         }
-
-        /* Анімації */
-        .fade-out {
-            opacity: 0;
-            transform: translateX(100%);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Особистий Нотатник</h1>
-        <input type="text" id="noteInput" placeholder="Додати нову нотатку...">
-        <button id="addNoteBtn">Додати</button>
-        <button id="clearNotesBtn" class="clear-btn">Очистити все</button>
-        <ul id="noteList"></ul>
+        <h1>Словниковий Тренажер</h1>
+
+        <h2>Додати нове слово</h2>
+        <input type="text" id="wordInput" placeholder="Слово (англійською)">
+        <input type="text" id="translationInput" placeholder="Переклад (українською)">
+        <button id="addWordBtn">Додати слово</button>
+
+        <h2>Список слів</h2>
+        <div id="wordList" class="word-list"></div>
+
+        <h2>Тест на знання</h2>
+        <button id="startQuizBtn">Почати тест</button>
+        <div class="quiz-section" id="quizSection" style="display: none;">
+            <div id="quizWord" class="question"></div>
+            <input type="text" id="userAnswer" placeholder="Ваш відповідь">
+            <button id="checkAnswerBtn">Перевірити</button>
+            <div class="result" id="result"></div>
+        </div>
     </div>
+
     <script>
-        document.getElementById('addNoteBtn').addEventListener('click', addNote);
-        document.getElementById('clearNotesBtn').addEventListener('click', clearNotes);
-        const noteList = document.getElementById('noteList');
+        const addWordBtn = document.getElementById('addWordBtn');
+        const startQuizBtn = document.getElementById('startQuizBtn');
+        const quizSection = document.getElementById('quizSection');
+        const quizWord = document.getElementById('quizWord');
+        const userAnswer = document.getElementById('userAnswer');
+        const result = document.getElementById('result');
+        const wordList = document.getElementById('wordList');
 
-        // Завантажити нотатки з локального сховища
-        loadNotes();
+        let words = JSON.parse(localStorage.getItem('words')) || [];
+        let currentWordIndex = -1;
 
-        function addNote() {
-            const noteInput = document.getElementById('noteInput');
-            const noteValue = noteInput.value.trim();
+        // Функція для оновлення списку слів
+        function updateWordList() {
+            wordList.innerHTML = '';
+            words.forEach((item, index) => {
+                const wordItem = document.createElement('div');
+                wordItem.className = 'word-item';
+                wordItem.innerHTML = `${item.word} - ${item.translation}
+                    <button class="delete-btn" onclick="deleteWord(${index})">Видалити</button>`;
+                wordList.appendChild(wordItem);
+            });
+        }
 
-            if (noteValue) {
-                const li = createNoteElement(noteValue);
-                noteList.appendChild(li);
-                saveNotes();
-                noteInput.value = '';
+        // Додати нове слово
+        addWordBtn.addEventListener('click', () => {
+            const word = document.getElementById('wordInput').value.trim();
+            const translation = document.getElementById('translationInput').value.trim();
+
+            if (word && translation) {
+                words.push({ word, translation });
+                localStorage.setItem('words', JSON.stringify(words));
+                document.getElementById('wordInput').value = '';
+                document.getElementById('translationInput').value = '';
+                alert('Слово додано!');
+                updateWordList(); // Оновлюємо список слів
+            } else {
+                alert('Будь ласка, заповніть обидва поля!');
             }
+        });
+
+        // Видалити слово
+        function deleteWord(index) {
+            words.splice(index, 1);
+            localStorage.setItem('words', JSON.stringify(words));
+            updateWordList(); // Оновлюємо список слів
         }
 
-        function createNoteElement(noteValue) {
-            const li = document.createElement('li');
-            li.textContent = noteValue;
+        // Почати тест
+        startQuizBtn.addEventListener('click', () => {
+            if (words.length === 0) {
+                alert('Додайте слова перед початком тесту!');
+                return;
+            }
+            currentWordIndex = Math.floor(Math.random() * words.length);
+            quizWord.textContent = `Як перекладається слово: "${words[currentWordIndex].word}"?`;
+            quizSection.style.display = 'block';
+            result.textContent = '';
+            userAnswer.value = '';
+        });
 
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Видалити';
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.onclick = function() {
-                li.classList.add('fade-out');
-                setTimeout(() => {
-                    noteList.removeChild(li);
-                    saveNotes();
-                }, 500);
-            };
+        // Перевірити відповідь
+        document.getElementById('checkAnswerBtn').addEventListener('click', () => {
+            if (currentWordIndex === -1) return;
 
-            li.appendChild(deleteBtn);
-            return li;
-        }
+            const answer = userAnswer.value.trim();
+            const correctTranslation = words[currentWordIndex].translation;
 
-        function clearNotes() {
-            noteList.innerHTML = '';
-            localStorage.removeItem('notes');
-        }
+            if (answer.toLowerCase() === correctTranslation.toLowerCase()) {
+                result.textContent = 'Правильно!';
+                result.style.color = 'green';
+            } else {
+                result.textContent = `Неправильно! Правильна відповідь: "${correctTranslation}"`;
+                result.style.color = 'red';
+            }
 
-        function saveNotes() {
-            const notes = [];
-            noteList.querySelectorAll('li').forEach(li => {
-                notes.push(li.textContent.replace('Видалити', '').trim());
-            });
-            localStorage.setItem('notes', JSON.stringify(notes));
-        }
+            // Завантажити наступне слово
+            currentWordIndex = Math.floor(Math.random() * words.length);
+            quizWord.textContent = `Як перекладається слово: "${words[currentWordIndex].word}"?`;
+            userAnswer.value = '';
+        });
 
-        function loadNotes() {
-            const notes = JSON.parse(localStorage.getItem('notes')) || [];
-            notes.forEach(note => {
-                const li = createNoteElement(note);
-                noteList.appendChild(li);
-            });
-        }
+        // Оновлюємо список слів при завантаженні
+        updateWordList();
     </script>
 </body>
 </html>
