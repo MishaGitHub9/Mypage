@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List</title>
+    <title>Особистий Нотатник</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,12 +76,6 @@
             transition: background-color 0.3s, transform 0.2s;
         }
 
-        li.completed {
-            text-decoration: line-through;
-            color: gray;
-            background-color: #e9ecef;
-        }
-
         .delete-btn {
             background-color: #dc3545;
             color: white;
@@ -105,35 +99,35 @@
 </head>
 <body>
     <div class="container">
-        <h1>Список справ</h1>
-        <input type="text" id="taskInput" placeholder="Додати нову справу...">
-        <button id="addTaskBtn">Додати</button>
-        <button id="clearTasksBtn" class="clear-btn">Очистити все</button>
-        <ul id="taskList"></ul>
+        <h1>Особистий Нотатник</h1>
+        <input type="text" id="noteInput" placeholder="Додати нову нотатку...">
+        <button id="addNoteBtn">Додати</button>
+        <button id="clearNotesBtn" class="clear-btn">Очистити все</button>
+        <ul id="noteList"></ul>
     </div>
     <script>
-        document.getElementById('addTaskBtn').addEventListener('click', addTask);
-        document.getElementById('clearTasksBtn').addEventListener('click', clearTasks);
-        const taskList = document.getElementById('taskList');
+        document.getElementById('addNoteBtn').addEventListener('click', addNote);
+        document.getElementById('clearNotesBtn').addEventListener('click', clearNotes);
+        const noteList = document.getElementById('noteList');
 
-        // Завантажити задачі з локального сховища
-        loadTasks();
+        // Завантажити нотатки з локального сховища
+        loadNotes();
 
-        function addTask() {
-            const taskInput = document.getElementById('taskInput');
-            const taskValue = taskInput.value.trim();
+        function addNote() {
+            const noteInput = document.getElementById('noteInput');
+            const noteValue = noteInput.value.trim();
 
-            if (taskValue) {
-                const li = createTaskElement(taskValue);
-                taskList.appendChild(li);
-                saveTasks();
-                taskInput.value = '';
+            if (noteValue) {
+                const li = createNoteElement(noteValue);
+                noteList.appendChild(li);
+                saveNotes();
+                noteInput.value = '';
             }
         }
 
-        function createTaskElement(taskValue) {
+        function createNoteElement(noteValue) {
             const li = document.createElement('li');
-            li.textContent = taskValue;
+            li.textContent = noteValue;
 
             const deleteBtn = document.createElement('button');
             deleteBtn.textContent = 'Видалити';
@@ -141,44 +135,33 @@
             deleteBtn.onclick = function() {
                 li.classList.add('fade-out');
                 setTimeout(() => {
-                    taskList.removeChild(li);
-                    saveTasks();
+                    noteList.removeChild(li);
+                    saveNotes();
                 }, 500);
             };
 
             li.appendChild(deleteBtn);
-            li.addEventListener('click', function() {
-                li.classList.toggle('completed');
-                saveTasks();
-            });
-
             return li;
         }
 
-        function clearTasks() {
-            taskList.innerHTML = '';
-            localStorage.removeItem('tasks');
+        function clearNotes() {
+            noteList.innerHTML = '';
+            localStorage.removeItem('notes');
         }
 
-        function saveTasks() {
-            const tasks = [];
-            taskList.querySelectorAll('li').forEach(li => {
-                tasks.push({
-                    text: li.childNodes[0].textContent,
-                    completed: li.classList.contains('completed')
-                });
+        function saveNotes() {
+            const notes = [];
+            noteList.querySelectorAll('li').forEach(li => {
+                notes.push(li.textContent.replace('Видалити', '').trim());
             });
-            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('notes', JSON.stringify(notes));
         }
 
-        function loadTasks() {
-            const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks.forEach(task => {
-                const li = createTaskElement(task.text);
-                if (task.completed) {
-                    li.classList.add('completed');
-                }
-                taskList.appendChild(li);
+        function loadNotes() {
+            const notes = JSON.parse(localStorage.getItem('notes')) || [];
+            notes.forEach(note => {
+                const li = createNoteElement(note);
+                noteList.appendChild(li);
             });
         }
     </script>
