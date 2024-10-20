@@ -58,6 +58,18 @@
             justify-content: space-between;
             align-items: center;
         }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .delete-btn:hover {
+            background-color: #ff3333;
+        }
         #question, #result {
             margin-top: 20px;
             text-align: center;
@@ -66,7 +78,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Вивчення англійської</h1>
+        <h1>Англійський записничок</h1>
         <div class="input-group">
             <input type="text" id="englishWord" placeholder="Англійське слово">
             <input type="text" id="ukrainianTranslation" placeholder="Український переклад">
@@ -103,11 +115,10 @@
             list.innerHTML = '';
             words.forEach((word, index) => {
                 const li = document.createElement('li');
-                li.textContent = `${word.en} - ${word.uk}`;
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = 'Видалити';
-                deleteBtn.onclick = () => deleteWord(index);
-                li.appendChild(deleteBtn);
+                li.innerHTML = `
+                    <span>${word.en} - ${word.uk}</span>
+                    <button class="delete-btn" onclick="deleteWord(${index})">Видалити</button>
+                `;
                 list.appendChild(li);
             });
         }
@@ -137,7 +148,7 @@
             const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
             const question = document.getElementById('question').textContent;
             const correctAnswer = question.includes('українською') ? currentWord.uk : currentWord.en;
-
+            
             if (userAnswer === correctAnswer.toLowerCase()) {
                 document.getElementById('result').textContent = 'Правильно! Молодець!';
             } else {
