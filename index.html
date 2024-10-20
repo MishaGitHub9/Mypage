@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мій словник англійської</title>
     <style>
+        /* Попередні стилі залишаються без змін */
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -87,7 +88,7 @@
             font-weight: bold;
         }
         .bottom-padding {
-            height: 60px; /* Додаткове місце внизу для прокрутки */
+            height: 60px;
         }
         @media (max-width: 600px) {
             .container {
@@ -211,6 +212,18 @@
                     this.scrollIntoView({behavior: 'smooth', block: 'center'});
                 }, 300);
             });
+        });
+
+        // Приховування клавіатури при подвійному натисканні
+        let lastTap = 0;
+        document.addEventListener('touchend', function(event) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 500 && tapLength > 0) {
+                document.activeElement.blur();
+                event.preventDefault();
+            }
+            lastTap = currentTime;
         });
     </script>
 </body>
