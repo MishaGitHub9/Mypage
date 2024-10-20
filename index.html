@@ -11,12 +11,15 @@
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            height: 100vh; /* Задаємо висоту на 100% вікна */
+            display: flex;
+            flex-direction: column; /* Вертикальне вирівнювання */
         }
         .container {
-            width: 90%;
-            max-width: 600px;
-            margin: auto;
+            flex: 1; /* Займаємо всю доступну висоту */
+            overflow-y: auto; /* Додаємо прокрутку */
             padding: 20px;
+            box-sizing: border-box; /* Включаємо padding у висоту та ширину */
         }
         header {
             background: #3498db;
