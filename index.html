@@ -2,176 +2,255 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Вивчення англійської</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Learning App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            background-color: #f0f0f0;
-        }
-        .container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             padding: 20px;
-            box-sizing: border-box;
         }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        input, button {
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+            max-width: 500px;
+            padding: 20px;
         }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #wordList {
-            list-style-type: none;
-            padding: 0;
-        }
-        #wordList li {
-            background-color: white;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 4px;
+
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
         }
-        .delete-btn {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
+
+        .score {
+            background: #e3f2fd;
             padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.8em;
+            border-radius: 20px;
+            font-size: 14px;
         }
-        .delete-btn:hover {
-            background-color: #ff3333;
-        }
-        #question, #result {
-            margin-top: 20px;
+
+        .word-display {
             text-align: center;
+            margin: 20px 0;
+        }
+
+        .word {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .sound-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #2196f3;
+            font-size: 24px;
+            padding: 5px 10px;
+        }
+
+        .input-section {
+            margin: 20px 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2196f3;
+        }
+
+        .result {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .correct {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .incorrect {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #2196f3;
+            color: white;
+            margin: 5px 0;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #1976d2;
+        }
+
+        .button:disabled {
+            background-color: #bdbdbd;
+            cursor: not-allowed;
+        }
+
+        .button.outline {
+            background-color: white;
+            color: #2196f3;
+            border: 2px solid #2196f3;
+        }
+
+        .button.outline:hover {
+            background-color: #e3f2fd;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+
+            .word {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Англійський записничок</h1>
-        <div class="input-group">
-            <input type="text" id="englishWord" placeholder="Англійське слово">
-            <input type="text" id="ukrainianTranslation" placeholder="Український переклад">
-            <button onclick="addWord()">Додати слово</button>
+    <div class="card">
+        <div class="header">
+            <h1>English Learning</h1>
+            <div class="score">Score: <span id="scoreValue">0</span></div>
         </div>
-        <ul id="wordList"></ul>
-        <div id="question"></div>
-        <div class="input-group">
-            <input type="text" id="answer" placeholder="Ваша відповідь">
-            <button onclick="checkAnswer()">Перевірити</button>
+
+        <div class="word-display">
+            <div class="word" id="wordDisplay"></div>
+            <button class="sound-button" onclick="playSound()">🔊</button>
         </div>
-        <div id="result"></div>
+
+        <div class="input-section">
+            <input type="text" id="userInput" placeholder="Введіть переклад...">
+            <div id="result" class="result" style="display: none;"></div>
+            
+            <div class="buttons">
+                <button class="button" id="checkButton" onclick="checkAnswer()">Перевірити</button>
+                <button class="button" id="nextButton" onclick="nextWord()" style="display: none;">Наступне →</button>
+            </div>
+            
+            <button class="button outline" onclick="toggleMode()" style="margin-top: 10px;">
+                Перейти до <span id="modeToggleText">речень</span>
+            </button>
+        </div>
     </div>
 
     <script>
-        let words = JSON.parse(localStorage.getItem('words')) || [];
-        let currentWord;
+        const words = [
+            { word: 'apple', translation: 'яблуко', sentence: 'I eat an apple every day.' },
+            { word: 'book', translation: 'книга', sentence: 'She reads a book in the evening.' },
+            { word: 'friend', translation: 'друг', sentence: 'My friend lives in London.' },
+            { word: 'house', translation: 'будинок', sentence: 'The house is very beautiful.' }
+        ];
 
-        function addWord() {
-            const en = document.getElementById('englishWord').value.trim();
-            const uk = document.getElementById('ukrainianTranslation').value.trim();
-            if (en && uk) {
-                words.push({en, uk});
-                localStorage.setItem('words', JSON.stringify(words));
-                updateWordList();
-                document.getElementById('englishWord').value = '';
-                document.getElementById('ukrainianTranslation').value = '';
-                newQuestion();
-            }
-        }
+        let currentMode = 'word'; // 'word' or 'sentence'
+        let currentWordIndex = 0;
+        let score = 0;
+        let isChecked = false;
 
-        function updateWordList() {
-            const list = document.getElementById('wordList');
-            list.innerHTML = '';
-            words.forEach((word, index) => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${word.en} - ${word.uk}</span>
-                    <button class="delete-btn" onclick="deleteWord(${index})">Видалити</button>
-                `;
-                list.appendChild(li);
-            });
-        }
-
-        function deleteWord(index) {
-            words.splice(index, 1);
-            localStorage.setItem('words', JSON.stringify(words));
-            updateWordList();
-            newQuestion();
-        }
-
-        function newQuestion() {
-            if (words.length === 0) {
-                document.getElementById('question').textContent = 'Додайте слова для тестування';
-                return;
-            }
-            currentWord = words[Math.floor(Math.random() * words.length)];
-            const isEnglishQuestion = Math.random() < 0.5;
-            document.getElementById('question').textContent = isEnglishQuestion 
-                ? `Як перекладається "${currentWord.en}" українською?`
-                : `Як перекладається "${currentWord.uk}" англійською?`;
-            document.getElementById('answer').value = '';
-            document.getElementById('result').textContent = '';
+        function updateDisplay() {
+            const currentWord = words[currentWordIndex];
+            wordDisplay.textContent = currentMode === 'word' ? currentWord.word : currentWord.sentence;
+            userInput.value = '';
+            userInput.placeholder = currentMode === 'word' ? 'Введіть переклад...' : 'Введіть речення...';
+            result.style.display = 'none';
+            checkButton.style.display = 'block';
+            nextButton.style.display = 'none';
+            isChecked = false;
+            
+            modeToggleText.textContent = currentMode === 'word' ? 'речень' : 'слів';
         }
 
         function checkAnswer() {
-            const userAnswer = document.getElementById('answer').value.trim().toLowerCase();
-            const question = document.getElementById('question').textContent;
-            const correctAnswer = question.includes('українською') ? currentWord.uk : currentWord.en;
+            if (isChecked) return;
             
-            if (userAnswer === correctAnswer.toLowerCase()) {
-                document.getElementById('result').textContent = 'Правильно! Молодець!';
+            const currentWord = words[currentWordIndex];
+            const userAnswer = userInput.value.trim().toLowerCase();
+            const correctAnswer = currentMode === 'word' 
+                ? currentWord.translation.toLowerCase()
+                : currentWord.sentence.toLowerCase();
+
+            result.style.display = 'block';
+            if (userAnswer === correctAnswer) {
+                result.textContent = '✓ Правильно!';
+                result.className = 'result correct';
+                score++;
+                scoreValue.textContent = score;
             } else {
-                document.getElementById('result').textContent = `Неправильно. Правильна відповідь: ${correctAnswer}`;
+                result.textContent = `✗ Правильна відповідь: ${correctAnswer}`;
+                result.className = 'result incorrect';
             }
 
-            setTimeout(newQuestion, 2000);
+            checkButton.style.display = 'none';
+            nextButton.style.display = 'block';
+            isChecked = true;
         }
 
-        updateWordList();
-        newQuestion();
+        function nextWord() {
+            currentWordIndex = (currentWordIndex + 1) % words.length;
+            updateDisplay();
+        }
 
-        // Приховування клавіатури при подвійному натисканні
-        let lastTap = 0;
-        document.addEventListener('touchend', function(event) {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            if (tapLength < 500 && tapLength > 0) {
-                event.preventDefault();
-                document.activeElement.blur();
+        function toggleMode() {
+            currentMode = currentMode === 'word' ? 'sentence' : 'word';
+            updateDisplay();
+        }
+
+        function playSound() {
+            // Тут можна додати логіку відтворення звуку
+            alert('Функція відтворення звуку буде додана пізніше');
+        }
+
+        // Event Listeners
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !isChecked) {
+                checkAnswer();
             }
-            lastTap = currentTime;
         });
+
+        // Initialize
+        updateDisplay();
     </script>
 </body>
 </html>
