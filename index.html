@@ -44,26 +44,18 @@
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 14px;
+            color: #2196f3;
         }
 
         .word-display {
             text-align: center;
-            margin: 20px 0;
+            margin: 40px 0;
         }
 
         .word {
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
             margin-bottom: 10px;
-        }
-
-        .sound-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #2196f3;
-            font-size: 24px;
-            padding: 5px 10px;
         }
 
         .input-section {
@@ -86,9 +78,11 @@
 
         .result {
             text-align: center;
-            margin: 10px 0;
-            padding: 10px;
+            margin: 15px 0;
+            padding: 12px;
             border-radius: 8px;
+            font-weight: 500;
+            font-size: 16px;
         }
 
         .correct {
@@ -103,7 +97,7 @@
 
         .button {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
             border-radius: 8px;
             font-size: 16px;
@@ -123,28 +117,13 @@
             cursor: not-allowed;
         }
 
-        .button.outline {
-            background-color: white;
-            color: #2196f3;
-            border: 2px solid #2196f3;
-        }
-
-        .button.outline:hover {
-            background-color: #e3f2fd;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 10px;
-        }
-
         @media (max-width: 480px) {
             .card {
                 padding: 15px;
             }
 
             .word {
-                font-size: 20px;
+                font-size: 28px;
             }
         }
     </style>
@@ -158,7 +137,6 @@
 
         <div class="word-display">
             <div class="word" id="wordDisplay"></div>
-            <button class="sound-button" onclick="playSound()">🔊</button>
         </div>
 
         <div class="input-section">
@@ -169,37 +147,73 @@
                 <button class="button" id="checkButton" onclick="checkAnswer()">Перевірити</button>
                 <button class="button" id="nextButton" onclick="nextWord()" style="display: none;">Наступне →</button>
             </div>
-            
-            <button class="button outline" onclick="toggleMode()" style="margin-top: 10px;">
-                Перейти до <span id="modeToggleText">речень</span>
-            </button>
         </div>
     </div>
 
     <script>
         const words = [
-            { word: 'apple', translation: 'яблуко', sentence: 'I eat an apple every day.' },
-            { word: 'book', translation: 'книга', sentence: 'She reads a book in the evening.' },
-            { word: 'friend', translation: 'друг', sentence: 'My friend lives in London.' },
-            { word: 'house', translation: 'будинок', sentence: 'The house is very beautiful.' }
+            // Базові дієслова
+            { word: 'be', translation: 'бути' },
+            { word: 'have', translation: 'мати' },
+            { word: 'do', translation: 'робити' },
+            { word: 'say', translation: 'сказати' },
+            { word: 'get', translation: 'отримати' },
+            { word: 'make', translation: 'робити/створювати' },
+            { word: 'go', translation: 'йти' },
+            { word: 'know', translation: 'знати' },
+            { word: 'take', translation: 'брати' },
+            { word: 'see', translation: 'бачити' },
+            
+            // Прикметники
+            { word: 'good', translation: 'добрий' },
+            { word: 'new', translation: 'новий' },
+            { word: 'first', translation: 'перший' },
+            { word: 'last', translation: 'останній' },
+            { word: 'long', translation: 'довгий' },
+            { word: 'great', translation: 'чудовий' },
+            { word: 'little', translation: 'маленький' },
+            { word: 'own', translation: 'власний' },
+            { word: 'different', translation: 'різний' },
+            { word: 'old', translation: 'старий' },
+            
+            // Іменники
+            { word: 'time', translation: 'час' },
+            { word: 'person', translation: 'людина' },
+            { word: 'year', translation: 'рік' },
+            { word: 'way', translation: 'шлях' },
+            { word: 'day', translation: 'день' },
+            { word: 'thing', translation: 'річ' },
+            { word: 'man', translation: 'чоловік' },
+            { word: 'world', translation: 'світ' },
+            { word: 'life', translation: 'життя' },
+            { word: 'hand', translation: 'рука' },
+            
+            // Прислівники
+            { word: 'up', translation: 'вгору' },
+            { word: 'now', translation: 'зараз' },
+            { word: 'out', translation: 'назовні' },
+            { word: 'then', translation: 'тоді' },
+            { word: 'there', translation: 'там' },
+            { word: 'when', translation: 'коли' },
+            { word: 'back', translation: 'назад' },
+            { word: 'just', translation: 'просто' },
+            { word: 'only', translation: 'тільки' },
+            { word: 'well', translation: 'добре' }
         ];
 
-        let currentMode = 'word'; // 'word' or 'sentence'
         let currentWordIndex = 0;
         let score = 0;
         let isChecked = false;
 
         function updateDisplay() {
             const currentWord = words[currentWordIndex];
-            wordDisplay.textContent = currentMode === 'word' ? currentWord.word : currentWord.sentence;
+            wordDisplay.textContent = currentWord.word;
             userInput.value = '';
-            userInput.placeholder = currentMode === 'word' ? 'Введіть переклад...' : 'Введіть речення...';
+            userInput.placeholder = 'Введіть переклад...';
             result.style.display = 'none';
             checkButton.style.display = 'block';
             nextButton.style.display = 'none';
             isChecked = false;
-            
-            modeToggleText.textContent = currentMode === 'word' ? 'речень' : 'слів';
         }
 
         function checkAnswer() {
@@ -207,9 +221,7 @@
             
             const currentWord = words[currentWordIndex];
             const userAnswer = userInput.value.trim().toLowerCase();
-            const correctAnswer = currentMode === 'word' 
-                ? currentWord.translation.toLowerCase()
-                : currentWord.sentence.toLowerCase();
+            const correctAnswer = currentWord.translation.toLowerCase();
 
             result.style.display = 'block';
             if (userAnswer === correctAnswer) {
@@ -232,16 +244,6 @@
             updateDisplay();
         }
 
-        function toggleMode() {
-            currentMode = currentMode === 'word' ? 'sentence' : 'word';
-            updateDisplay();
-        }
-
-        function playSound() {
-            // Тут можна додати логіку відтворення звуку
-            alert('Функція відтворення звуку буде додана пізніше');
-        }
-
         // Event Listeners
         userInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !isChecked) {
@@ -249,7 +251,16 @@
             }
         });
 
-        // Initialize
+        // Перемішування масиву слів при старті
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Ініціалізація
+        shuffleArray(words);
         updateDisplay();
     </script>
 </body>
